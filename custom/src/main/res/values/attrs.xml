@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="IntervalView">
+        <attr name="interval_max_value" format="integer" />
+        <attr name="interval_min_value" format="integer" />
+        <attr name="interval_current_value" format="integer" />
+        <attr name="interval_point_radius_size" format="float|dimension" />
+        <attr name="interval_is_auto" format="boolean" />
+        <attr name="interval_first_auto" format="boolean" />
+        <attr name="interval_stroke_width" format="float|dimension" />
+        <attr name="interval_text_size" format="float|dimension" />
+        <attr name="interval_threshold_margin" format="float|dimension" />
+        <attr name="interval_value_margin" format="float|dimension" />
+        <attr name="interval_progress_margin" format="float|dimension" />
+        <attr name="interval_progress_height" format="float|dimension" />
+        <attr name="interval_progress_color" format="color" />
+        <attr name="interval_default_value_text_color" format="color" />
+        <attr name="interval_default_progress_color" format="color" />
+
+    </declare-styleable>
+    <declare-styleable name="VideoProgressView">
+        <attr name="play_progress_bar_item_interval" format="float|dimension" />
+        <attr name="play_progress_progress_margin_top" format="float|dimension" />
+        <attr name="play_progress_progress_height" format="float|dimension" />
+        <attr name="play_progress_min_text_margin_top" format="float|dimension" />
+        <attr name="play_progress_min_text_size" format="float|dimension" />
+        <attr name="play_progress_icon_height" format="float|dimension" />
+        <attr name="play_progress_icon_width" format="float|dimension" />
+        <attr name="play_progress_complete_progress_color" format="color" />
+        <attr name="play_progress_in_progress_color" format="color" />
+        <attr name="play_progress_default_progress_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="CustomChronometer">
+        <attr name="format" format="string" localization="suggested" />
+        <attr name="countDown" format="boolean" />
+        <attr name="downEndText" format="string"/>
+    </declare-styleable>
+</resources>

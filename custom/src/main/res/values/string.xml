@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stage_start_text">开场</string>
+    <string name="stage_warn_up_text">热身</string>
+    <string name="stage_cycling_text">骑行</string>
+    <string name="stage_rest_text">间歇休息</string>
+    <string name="stage_upper_body_text">上肢训练</string>
+    <string name="stage_emotion_slow_text">情绪舒缓</string>
+    <string name="stage_big_sprint_text">大冲刺</string>
+    <string name="stage_get_off_text">下车</string>
+    <string name="stage_stretch_text">拉伸</string>
+    <string name="stage_over_text">结束</string>
+</resources>
