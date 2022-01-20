@@ -136,48 +136,48 @@ class StageProgressView @JvmOverloads constructor(
     }
 
     private fun obtain(context: Context, attrs: AttributeSet? = null) {
-        val type = context.obtainStyledAttributes(attrs, R.styleable.VideoProgressView)
+        val type = context.obtainStyledAttributes(attrs, R.styleable.StageProgressView)
         interval =
             type.getDimension(
-                R.styleable.VideoProgressView_play_progress_bar_item_interval,
+                R.styleable.StageProgressView_play_progress_bar_item_interval,
                 interval
             )
         progressMarginTop = type.getDimension(
-            R.styleable.VideoProgressView_play_progress_progress_margin_top,
+            R.styleable.StageProgressView_play_progress_progress_margin_top,
             progressMarginTop
         )
         progressHeight = type.getDimension(
-            R.styleable.VideoProgressView_play_progress_progress_height,
+            R.styleable.StageProgressView_play_progress_progress_height,
             progressHeight
         )
         progressMarginBottom = type.getDimension(
-            R.styleable.VideoProgressView_play_progress_min_text_margin_top,
+            R.styleable.StageProgressView_play_progress_min_text_margin_top,
             progressMarginBottom
         )
         stageTextSize = type.getDimension(
-            R.styleable.VideoProgressView_play_progress_min_text_size,
+            R.styleable.StageProgressView_play_progress_min_text_size,
             stageTextSize
         )
         stageMarkHeight =
             type.getDimension(
-                R.styleable.VideoProgressView_play_progress_icon_height,
+                R.styleable.StageProgressView_play_progress_icon_height,
                 stageMarkHeight
             )
         stageMarkWidth =
             type.getDimension(
-                R.styleable.VideoProgressView_play_progress_icon_width,
+                R.styleable.StageProgressView_play_progress_icon_width,
                 stageMarkWidth
             )
         completeProgressColor = type.getColor(
-            R.styleable.VideoProgressView_play_progress_complete_progress_color,
+            R.styleable.StageProgressView_play_progress_complete_progress_color,
             completeProgressColor
         )
         inProgressColor = type.getColor(
-            R.styleable.VideoProgressView_play_progress_in_progress_color,
+            R.styleable.StageProgressView_play_progress_in_progress_color,
             inProgressColor
         )
         defaultProgressColor = type.getColor(
-            R.styleable.VideoProgressView_play_progress_default_progress_color,
+            R.styleable.StageProgressView_play_progress_default_progress_color,
             defaultProgressColor
         )
         type?.recycle()
