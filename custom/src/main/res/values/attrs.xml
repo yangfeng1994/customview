@@ -19,4 +19,8 @@
         <attr name="countDown" format="boolean" />
         <attr name="downEndText" format="string"/>
     </declare-styleable>
+    <declare-styleable name="IntervalLineView">
+        <attr name="inter_line_progress_color" format="color"/>
+        <attr name="inter_line_progress_background_color" format="color"/>
+    </declare-styleable>
 </resources>
