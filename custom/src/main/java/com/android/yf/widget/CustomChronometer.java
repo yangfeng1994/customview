@@ -392,10 +392,6 @@ public class CustomChronometer extends androidx.appcompat.widget.AppCompatTextVi
     };
 
     void dispatchChronometerTick() {
-        if (lastTimes == times) {
-            return;
-        }
-        lastTimes = times;
         if (mOnChronometerTickListener != null) {
             mOnChronometerTickListener.onChronometerTick(this);
         }

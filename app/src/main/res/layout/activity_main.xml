@@ -4,15 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <com.android.yf.widget.StageProgressView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
-    <com.android.yf.widget.StageSectionView
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/mTVTestAnimal"
+        android:layout_width="200px"
+        android:layout_height="200px"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="测试动画"
+        android:textColor="@color/black"
+        android:textSize="40px" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/mTestAnimal"
+        app:lottie_autoPlay="false"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
 </LinearLayout>
