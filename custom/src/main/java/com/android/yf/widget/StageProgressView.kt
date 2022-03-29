@@ -5,19 +5,18 @@ import android.graphics.*
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.android.yf.bean.ProgressStageData
 
 class StageProgressView @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
 ) : View(context, attrs, defStyleAttr) {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val mTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-
+    private var textRect = Rect()
 
     private val data = ArrayList<ProgressStageData>()
 
@@ -246,8 +245,8 @@ class StageProgressView @JvmOverloads constructor(
     private fun drawStage(unit: Float, canvas: Canvas) {
         data.forEachIndexed { index, periodStageData ->
             val left = drawStagMark(unit, index, periodStageData, canvas)
-            drawStageProgress(left, unit, index, periodStageData, canvas)
-            drawStageText(left, index, periodStageData, canvas)
+            val progressSize = drawStageProgress(left, unit, index, periodStageData, canvas)
+            drawStageText(left, index, periodStageData, progressSize, canvas)
         }
     }
 
@@ -323,7 +322,7 @@ class StageProgressView @JvmOverloads constructor(
         index: Int,
         periodStageData: ProgressStageData,
         canvas: Canvas,
-    ) {
+    ): Float {
         rect.left = left.toInt()
         val time = periodStageData.end_time.minus(periodStageData.start_time)
         val right = time.times(unit).plus(left).toInt()
@@ -352,6 +351,7 @@ class StageProgressView @JvmOverloads constructor(
             }
         }
         progressDrawable.draw(canvas)
+        return right.minus(left)
     }
 
     /**
@@ -361,6 +361,7 @@ class StageProgressView @JvmOverloads constructor(
         left: Float,
         index: Int,
         periodStageData: ProgressStageData,
+        progressSize: Float,
         canvas: Canvas,
     ) {
         if (isPrepare() || isOver()) return
@@ -375,9 +376,18 @@ class StageProgressView @JvmOverloads constructor(
             } else {
                 sum.div(60)
             }
+            val text = "${min}min${getStageName(data[currentStage].type)}"
+            mTextPaint.getTextBounds(text, 0, text.length, textRect)
+            val textWidth = textRect.width()
+            val size = data.size.minus(1)
+            var starLocal = if (progressSize < textWidth && index == size) {
+                width.minus(textWidth).toFloat()
+            } else {
+                left
+            }
             canvas?.drawText(
-                "${min}min${getStageName(data[currentStage].type)}",
-                left,
+                text,
+                starLocal,
                 bottom,
                 mTextPaint
             )
