@@ -12,7 +12,7 @@ import kotlin.math.roundToInt
 
 
 class StageSectionView @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
 ) : View(context, attrs, defStyleAttr) {
 
     /**
@@ -318,7 +318,7 @@ class StageSectionView @JvmOverloads constructor(
         right: Float,
         bottom: Float,
         canvas: Canvas,
-        position: Int
+        position: Int,
     ) {
         val line =
             if (lineArray.size == 7) {
@@ -467,5 +467,10 @@ class StageSectionView @JvmOverloads constructor(
         }
     }
 
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        starProgressBitmap?.recycle()
+        starProgressBitmap = null
+    }
 
 }

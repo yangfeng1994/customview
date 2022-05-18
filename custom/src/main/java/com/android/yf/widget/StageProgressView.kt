@@ -562,4 +562,11 @@ class StageProgressView @JvmOverloads constructor(
         }
     }
 
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        stagMarkBitmap.forEach { it.value.recycle() }
+        currentStageMarkBitmap.forEach { it.value.recycle() }
+        noStartStageMarkBitmap.forEach { it.value.recycle() }
+    }
+
 }
