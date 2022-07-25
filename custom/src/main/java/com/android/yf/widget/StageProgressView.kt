@@ -385,7 +385,8 @@ class StageProgressView @JvmOverloads constructor(
             } else {
                 left
             }
-            canvas?.drawText(
+            mTextPaint.color = completeProgressColor
+            canvas.drawText(
                 text,
                 starLocal,
                 bottom,
