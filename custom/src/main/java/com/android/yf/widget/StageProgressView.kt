@@ -182,7 +182,7 @@ class StageProgressView @JvmOverloads constructor(
         type?.recycle()
         mTextPaint.textSize = stageTextSize
         mTextPaint.color = inProgressColor
-        mTextPaint.setShadowLayer(2F, 0F, 0F, shadowLayout)
+//        mTextPaint.setShadowLayer(2F, 0F, 0F, shadowLayout)
     }
 
     fun setData(data: Collection<ProgressStageData>, duration: Long) {
@@ -282,7 +282,7 @@ class StageProgressView @JvmOverloads constructor(
             currentStage == index -> {
                 var bitmap = currentStageMarkBitmap[type]
                 if (null == bitmap) {
-                    bitmap = getCurrentCyclingMark(type)
+                    bitmap = getOverCyclingMark(type)
                     currentStageMarkBitmap[type] = bitmap
                 }
                 bitmap
@@ -455,7 +455,7 @@ class StageProgressView @JvmOverloads constructor(
     }
 
     /**
-     * 当前选中的资源文件
+     * 结束的资源文件
      */
     fun getOverCyclingMark(type: Int): Bitmap {
         val drawableId = when (type) {
