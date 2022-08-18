@@ -378,7 +378,7 @@ class StageProgressView @JvmOverloads constructor(
             } else {
                 sum.div(60)
             }
-            val text = "${min}min${getStageName(data[currentStage].type)}"
+            val text = "${min}min ${getStageName(data[currentStage].type)}"
             mTextPaint.getTextBounds(text, 0, text.length, textRect)
             val textWidth = textRect.width()
             val size = data.size.minus(1)
