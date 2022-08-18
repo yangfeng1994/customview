@@ -304,12 +304,14 @@ class StageProgressView @JvmOverloads constructor(
                 bitmap
             }
         }
-        canvas?.drawBitmap(
-            stageMark,
-            left,
-            0F,
-            paint
-        )
+        if (!stageMark.isRecycled) {
+            canvas.drawBitmap(
+                stageMark,
+                left,
+                0F,
+                paint
+            )
+        }
         return left
     }
 
