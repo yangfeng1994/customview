@@ -44,7 +44,6 @@ class StageProgressView @JvmOverloads constructor(
      * 默认的播放进度底色
      */
     private var defaultProgressColor = Color.parseColor("#33FFFFFF")
-    private var shadowLayout = Color.parseColor("#99000000")
 
     /**
      * progress 距离上面icon的距离
@@ -91,6 +90,10 @@ class StageProgressView @JvmOverloads constructor(
     open var cyclingStatus: Int = 0
         set(value) {
             field = value
+            if (value == 1) {
+                val first = data.firstOrNull()
+                currentStageListener.invoke(first, 0)
+            }
             postInvalidate()
         }
 
@@ -126,6 +129,11 @@ class StageProgressView @JvmOverloads constructor(
     private fun isOver(): Boolean {
         return cyclingStatus == 2
     }
+
+    /**
+     * 当前选中的阶段的监听
+     */
+    var currentStageListener: (ProgressStageData?, Int) -> Unit = { progressStageData, i -> }
 
     init {
         paint.strokeWidth = 5f
@@ -182,7 +190,6 @@ class StageProgressView @JvmOverloads constructor(
         type?.recycle()
         mTextPaint.textSize = stageTextSize
         mTextPaint.color = inProgressColor
-//        mTextPaint.setShadowLayer(2F, 0F, 0F, shadowLayout)
     }
 
     fun setData(data: Collection<ProgressStageData>, duration: Long) {
@@ -424,7 +431,10 @@ class StageProgressView @JvmOverloads constructor(
     fun setCurrentStage() {
         data.forEachIndexed { index, periodStageData ->
             if (currentPosition in periodStageData.start_time until periodStageData.end_time) {
-                currentStage = index
+                if (currentStage != index) {
+                    currentStage = index
+                    currentStageListener.invoke(periodStageData, index)
+                }
                 return
             }
         }

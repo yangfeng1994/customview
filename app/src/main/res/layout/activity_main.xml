@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
+    android:background="@color/cardview_dark_background"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
@@ -21,13 +22,19 @@
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/mTestAnimal"
-        app:lottie_autoPlay="false"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        app:lottie_autoPlay="false" />
 
     <Chronometer
         android:id="@+id/mChorno"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
+
+    <com.android.yf.widget.CyclingScoreView
+        android:id="@+id/mScore"
+        android:layout_width="250dp"
+        android:layout_height="100dp"
+        android:scaleType="matrix" />
 </LinearLayout>
