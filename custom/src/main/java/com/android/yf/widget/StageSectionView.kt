@@ -2,11 +2,11 @@ package com.android.yf.widget
 
 import android.content.Context
 import android.graphics.*
+import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
 import android.util.AttributeSet
 import android.view.View
-import androidx.core.content.ContextCompat
 import java.math.BigDecimal
 import kotlin.math.roundToInt
 
@@ -67,8 +67,13 @@ class StageSectionView @JvmOverloads constructor(
     var starInnerRadii = floatArrayOf(100f, 0f, 0f, 0f, 0f, 0f, 0f, 100f)
     val startRoundRect = RoundRectShape(externalRound, null, externalRound)
     val startDrawable = ShapeDrawable(startRoundRect)
+    val gradientDrawable = GradientDrawable().apply {
+        setStroke(1, progressColor[0])
+        shape = GradientDrawable.RECTANGLE
+        setColor(Color.TRANSPARENT)
+        cornerRadii = externalRound
+    }
     var rect: Rect = Rect()
-    var starProgressBitmap: Bitmap? = null
 
     /**
      * 进度最左边的开始点
@@ -180,39 +185,28 @@ class StageSectionView @JvmOverloads constructor(
      */
     private fun onInitCommonPath() {
         mPaint.isAntiAlias = true
-        val startPaint = startDrawable?.paint
-        startPaint?.isAntiAlias = true
-        startPaint?.color = progressBackground
-        val paint = towDrawable?.paint
-        paint?.isAntiAlias = true
-        paint?.color = progressBackground
-        val endPaint = endDrawable?.paint
-        endPaint?.isAntiAlias = true
-        endPaint?.color = progressBackground
-        val starProgressPaint = startDrawableProgress?.paint
-        starProgressPaint?.isAntiAlias = true
-        starProgressPaint?.color = progressColor[0]
-        val localProgressPaint = localDrawableProgress?.paint
-        localProgressPaint?.isAntiAlias = true
-        val localSolidProgressPaint = localSolidDrawableProgress?.paint
-        localSolidProgressPaint?.isAntiAlias = true
-        val startSolidProgressPaint = startSolidDrawableProgress?.paint
-        startSolidProgressPaint?.isAntiAlias = true
-        startSolidProgressPaint?.color = progressColor[0]
-        starProgressBitmap = createBitmap()
-    }
-
-    private fun createBitmap(): Bitmap {
-        val drawable = ContextCompat.getDrawable(context, R.drawable.power_progress_star_stroke)
-        val bitmap = Bitmap.createBitmap(
-            itemWidth,
-            starPath[2],
-            Bitmap.Config.ARGB_8888
-        )
-        val canvas = Canvas(bitmap)
-        drawable?.setBounds(0, 0, canvas.width, canvas.height)
-        drawable?.draw(canvas)
-        return bitmap
+        startDrawable?.paint?.apply {
+            isAntiAlias = true
+            color = progressBackground
+        }
+        towDrawable?.paint?.apply {
+            isAntiAlias = true
+            color = progressBackground
+        }
+        endDrawable?.paint?.apply {
+            isAntiAlias = true
+            color = progressBackground
+        }
+        startDrawableProgress?.paint?.apply {
+            isAntiAlias = true
+            color = progressColor[0]
+        }
+        localDrawableProgress?.paint?.isAntiAlias = true
+        localSolidDrawableProgress?.paint?.isAntiAlias = true
+        startSolidDrawableProgress?.paint?.apply {
+            isAntiAlias = true
+            color = progressColor[0]
+        }
     }
 
     /**
@@ -221,14 +215,12 @@ class StageSectionView @JvmOverloads constructor(
     private fun drawProgress(canvas: Canvas) {
         when (stage) {
             0 -> {
-                starProgressBitmap?.run {
-                    canvas.drawBitmap(
-                        this,
-                        starPath[1].toFloat(),
-                        starPath[0].toFloat(),
-                        mPaint
-                    )
-                }
+                rect.top = starPath[0]
+                rect.left = starPath[1]
+                rect.bottom = starPath[2]
+                rect.right = starPath[3]
+                gradientDrawable.bounds = rect
+                gradientDrawable?.draw(canvas)
             }
             1 -> {
                 rect.top = starPath[0]
@@ -465,12 +457,6 @@ class StageSectionView @JvmOverloads constructor(
                 itemWidth
             }
         }
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        starProgressBitmap?.recycle()
-        starProgressBitmap = null
     }
 
 }
