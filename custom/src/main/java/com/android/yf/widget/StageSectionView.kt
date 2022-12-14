@@ -6,8 +6,11 @@ import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
 import android.util.AttributeSet
+import android.util.DisplayMetrics
+import android.util.TypedValue
 import android.view.View
-import java.math.BigDecimal
+import androidx.core.content.ContextCompat
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 
@@ -19,20 +22,22 @@ class StageSectionView @JvmOverloads constructor(
      * 统一的公共的
      */
     val outerRadii = floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)
-    var distanceRectF = RectF(1F, 1F, 1F, 1F)
-    var loacalDistanceRectF = RectF(1F, 1F, 1F, 1F)
-    val itemSectionData = arrayListOf(0, 40, 80, 120, 160, 200, 240)
-    val progressColor = intArrayOf(
-        Color.parseColor("#FF00FFFF"),
-        Color.parseColor("#00FF91"),
-        Color.parseColor("#FF9AC340"),
-        Color.parseColor("#FFE4E700"),
-        Color.parseColor("#FFE7BD00"),
-        Color.parseColor("#FFEB7100"),
-        Color.parseColor("#FFAC3004")
-    )
 
-    val mTypeface by lazy { Typeface.createFromAsset(context.assets, "Roboto-Regular.ttf") }
+    var itemSectionData = arrayListOf(0, 40, 80, 120, 160, 200, 240)
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+    /**
+     * 设置进度的颜色
+     */
+    var progressColor: ArrayList<Int> = arrayListOf()
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
 
     /**
      *0 是没有进行任何阶段
@@ -50,265 +55,815 @@ class StageSectionView @JvmOverloads constructor(
      */
     private var outPut = 0
 
-    /**
-     * 每个小进度之接的距离
-     */
-    val space = 2
+    var startDrawable: ShapeDrawable? = null
+    var endDrawable: ShapeDrawable? = null
 
     /**
-     * 每个小进度的宽度
+     * 开始的时候默认显示第一个小方块的进度
      */
-    val itemWidth = 35
+    var starStrokeDrawable: GradientDrawable? = null
 
-    /**
-     * 开始的左边进度背景
-     */
-    var externalRound = floatArrayOf(100f, 100f, 0f, 0f, 0f, 0f, 100f, 100f)
-    var starInnerRadii = floatArrayOf(100f, 0f, 0f, 0f, 0f, 0f, 0f, 100f)
-    val startRoundRect = RoundRectShape(externalRound, null, externalRound)
-    val startDrawable = ShapeDrawable(startRoundRect)
-    val gradientDrawable = GradientDrawable().apply {
-        setStroke(1, progressColor[0])
-        shape = GradientDrawable.RECTANGLE
-        setColor(Color.TRANSPARENT)
-        cornerRadii = externalRound
-    }
     var rect: Rect = Rect()
 
+    var startRectProgress: ShapeDrawable? = null
+
     /**
-     * 进度最左边的开始点
+     * 当前选中进度块的边框
      */
-    var progressLeft = 60
-    val starPath = intArrayOf(0, progressLeft, 10, progressLeft.plus(itemWidth))
-    val rectangleRect = RoundRectShape(
-        outerRadii,
-        null,
-        outerRadii
-    )
-    val towDrawable = ShapeDrawable(rectangleRect)
-    val progressBackground = Color.parseColor("#33FFFFFF")
-    val color60 = Color.parseColor("#99FFFFFF")
+    var localStrokeProgress: ShapeDrawable? = null
+
+    init {
+        setLayerType(LAYER_TYPE_SOFTWARE, null)
+        onInitCommonPath(context, attrs)
+    }
+
+
+    /**
+     * 左边的标题的宽度
+     */
+    var leftTitleWidth = 0
+
+    /**
+     * 左边的标题的高度
+     */
+    var leftTitleHeight = 0
+
+    /**
+     * ZONE FTP 字体大小
+     */
+    var stageTitleTextSize: Float = 0F
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+
+    /**
+     * ZONE FTP 字体颜色
+     */
+    var stageTitleTextColor: Int = 0
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+
+    /**
+     * ZONE FTP value 字体大小
+     */
+    var stageTitleValueTextSize: Float = 0f
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+    /**
+     * ZONE FTP value 字体颜色
+     */
+    var stageTitleValueTextColor: Int = 0
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+    /**
+     * 每个间隔item 距离 ZONE 与 FTP 左右的边距
+     */
+    var stageProgressMargin: Float = 0F
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+    /**
+     * 每个间隔item 底部text的字体大小
+     */
+    var stageProgressItemTextSize: Float = 0F
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+
+    /**
+     * ZONE FTP value 字体颜色
+     */
+    var stageProgressItemTextColor: Int = 0
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+    /**
+     * 每个间隔item 的高度
+     */
+    var stageItemHeight: Float = 0F
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+    /**
+     * 每个间隔item 的高度
+     */
+    var stageItemWidth: Float = 0F
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+    /**
+     * zone 与ftp 的value 与其距离
+     */
+    var stageValueMarginTop: Float = 0F
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+    /**
+     * 每一个小区块中间的距离
+     */
+    var stageProgressSpace: Float = 0F
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+
+    /**
+     * 最左跟最右的圆角角度
+     */
+    var stageProgressCorners: Float = 0F
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+    /**
+     * 进度条背景颜色
+     */
+    var stageProgressBackground: Int = 0
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+    /**
+     * 刻度距离progress 的高度
+     */
+    var stageScaleMargeTop: Float = 0f
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+    /**
+     * 刻度的宽度
+     */
+    var stageScaleWidth: Float = 0f
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+
+    /**
+     * 刻度的高度
+     */
+    var stageScaleHeight: Float = 0f
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+    /**
+     * 刻度值距离刻度的高度
+     */
+    var stageItemScaleValueMargeTop: Float = 0f
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+    /**
+     * 刻度值字体的大小
+     */
+    var stageItemTextSize: Float = 0f
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+    /**
+     * 刻度值字体的颜色
+     */
+    var stageItemTextColor: Int = 0
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+
+    /**
+     * 进度条边框的宽度
+     */
+    var stageProgressStrokeWidth: Float = 0F
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+
+    /**
+     * 构建属性
+     */
+    private fun obtainAttrs(context: Context, attrs: AttributeSet?) {
+        val type = context.obtainStyledAttributes(attrs, R.styleable.StageSectionView)
+        stageTitleTextSize =
+            type.getDimension(
+                R.styleable.StageSectionView_stageTitleTextSize,
+                resources.getDimension(R.dimen.s_12)
+            )
+        stageTitleTextColor =
+            type.getColor(
+                R.styleable.StageSectionView_stageTitleTextColor,
+                ContextCompat.getColor(context, R.color.c_60_white)
+            )
+        stageTitleValueTextSize =
+            type.getDimension(
+                R.styleable.StageSectionView_stageTitleValueTextSize,
+                resources.getDimension(R.dimen.s_16)
+            )
+        stageTitleValueTextColor =
+            type.getColor(
+                R.styleable.StageSectionView_stageTitleValueTextColor,
+                Color.WHITE
+            )
+        stageProgressMargin =
+            type.getDimension(
+                R.styleable.StageSectionView_stageProgressMargin,
+                resources.getDimension(R.dimen.d_29)
+            )
+        stageProgressItemTextSize =
+            type.getDimension(
+                R.styleable.StageSectionView_stageProgressItemTextSize,
+                resources.getDimension(R.dimen.s_12)
+            )
+
+        stageProgressItemTextColor =
+            type.getColor(
+                R.styleable.StageSectionView_stageProgressItemTextColor,
+                Color.WHITE
+            )
+
+        stageItemHeight =
+            type.getDimension(
+                R.styleable.StageSectionView_stageItemHeight,
+                resources.getDimension(R.dimen.d_10)
+            )
+
+        stageItemWidth =
+            type.getDimension(
+                R.styleable.StageSectionView_stageItemWidth,
+                resources.getDimension(R.dimen.d_32)
+            )
+
+        stageProgressCorners =
+            type.getDimension(
+                R.styleable.StageSectionView_stageProgressCorners,
+                resources.getDimension(R.dimen.d_95_24)
+            )
+
+        stageProgressBackground =
+            type.getColor(
+                R.styleable.StageSectionView_stageProgressBackground,
+                ContextCompat.getColor(context, R.color.c_20_white)
+            )
+
+        stageValueMarginTop =
+            type.getDimension(
+                R.styleable.StageSectionView_stageValueMarginTop,
+                resources.getDimension(R.dimen.d_21)
+            )
+
+        stageProgressSpace =
+            type.getDimension(
+                R.styleable.StageSectionView_stageProgressSpace,
+                resources.getDimension(R.dimen.d_2)
+            )
+
+        stageScaleMargeTop =
+            type.getDimension(
+                R.styleable.StageSectionView_stageScaleMargeTop,
+                resources.getDimension(R.dimen.d_4)
+            )
+
+        stageScaleWidth =
+            type.getDimension(
+                R.styleable.StageSectionView_stageScaleWidth,
+                resources.getDimension(R.dimen.d_1)
+            )
+
+        stageScaleHeight =
+            type.getDimension(
+                R.styleable.StageSectionView_stageScaleHeight,
+                resources.getDimension(R.dimen.d_4)
+            )
+
+        stageItemScaleValueMargeTop =
+            type.getDimension(
+                R.styleable.StageSectionView_stageItemScaleValueMargeTop,
+                resources.getDimension(R.dimen.d_6)
+            )
+
+        stageItemTextSize =
+            type.getDimension(
+                R.styleable.StageSectionView_stageItemTextSize,
+                resources.getDimension(R.dimen.s_12)
+            )
+
+        stageProgressStrokeWidth =
+            type.getDimension(
+                R.styleable.StageSectionView_stageProgressStrokeWidth,
+                resources.getDimension(R.dimen.d_0_95)
+            )
+
+        stageItemTextColor =
+            type.getColor(
+                R.styleable.StageSectionView_stageItemTextColor,
+                Color.WHITE
+            )
+
+    }
+
+    var starProgressExternalRound: FloatArray? = null
+
+    fun initProgressColor() {
+        progressColor = arrayListOf(
+            ContextCompat.getColor(context, R.color.c_stage_section_1),
+            ContextCompat.getColor(context, R.color.c_stage_section_2),
+            ContextCompat.getColor(context, R.color.c_stage_section_3),
+            ContextCompat.getColor(context, R.color.c_stage_section_4),
+            ContextCompat.getColor(context, R.color.c_stage_section_5),
+            ContextCompat.getColor(context, R.color.c_stage_section_6),
+            ContextCompat.getColor(context, R.color.c_stage_section_7)
+        )
+    }
+
+    fun getStarExternalRound(): FloatArray {
+        return floatArrayOf(
+            stageProgressCorners,
+            stageProgressCorners,
+            0f,
+            0f,
+            0f,
+            0f,
+            stageProgressCorners,
+            stageProgressCorners
+        )
+    }
+
+    private fun getStartShape(): ShapeDrawable {
+        return ShapeDrawable(
+            RoundRectShape(
+                starProgressExternalRound,
+                null,
+                starProgressExternalRound
+            )
+        )
+    }
+
+    /**
+     * 获取默认的开始的边框
+     */
+    private fun getStarStroke(): GradientDrawable {
+        return GradientDrawable().apply {
+            setStroke(stageProgressStrokeWidth.roundToInt(), progressColor.first())
+            shape = GradientDrawable.RECTANGLE
+            setColor(Color.TRANSPARENT)
+            cornerRadii = starProgressExternalRound
+        }
+    }
+
+    /**
+     * 第一个色块的进度
+     */
+    fun starRectProgress(): ShapeDrawable {
+        return ShapeDrawable(
+            RoundRectShape(
+                starProgressExternalRound,
+                null,
+                starProgressExternalRound
+            )
+        )
+    }
+
+    /**
+     * 获取当前进度的正方形边框
+     */
+    fun getLocalStroke(): ShapeDrawable {
+        return ShapeDrawable(
+            RoundRectShape(
+                outerRadii,
+                RectF(
+                    stageProgressStrokeWidth,
+                    stageProgressStrokeWidth,
+                    stageProgressStrokeWidth,
+                    stageProgressStrokeWidth
+                ),
+                outerRadii
+            )
+        )
+    }
+
+    var endInsideRound: FloatArray? = null
+
+    /**
+     * 获取最后一个小进度块的list
+     */
+    fun getInsideRound() {
+        endInsideRound = floatArrayOf(
+            0f,
+            0f,
+            stageProgressCorners,
+            stageProgressCorners,
+            stageProgressCorners,
+            stageProgressCorners,
+            0f,
+            0f
+        )
+    }
 
     /**
      * 结束的进度背景
      */
-    var endInsideRound = floatArrayOf(0f, 0f, 100f, 100f, 100f, 100f, 0f, 0f)
-    val endRoundRect = RoundRectShape(endInsideRound, null, endInsideRound)
-    val endDrawable = ShapeDrawable(endRoundRect)
-
-    val startRoundRectProgress = RoundRectShape(externalRound, distanceRectF, starInnerRadii)
-    val startDrawableProgress = ShapeDrawable(startRoundRectProgress)
-
-    val startSolidRoundRectProgress = RoundRectShape(externalRound, null, starInnerRadii)
-    val startSolidDrawableProgress = ShapeDrawable(startSolidRoundRectProgress)
-
-
-    val localRoundRectProgress = RoundRectShape(outerRadii, loacalDistanceRectF, outerRadii)
-    val localDrawableProgress = ShapeDrawable(localRoundRectProgress)
-
-    val localSolidRoundRectProgress = RoundRectShape(outerRadii, null, outerRadii)
-    val localSolidDrawableProgress = ShapeDrawable(localSolidRoundRectProgress)
-
-    var mCustomFtp: Int = 120
-
-
-    var ftpPercent: Int = 0
-
-    val mPaint by lazy { Paint().apply { typeface = mTypeface } }
-
-    /**
-     * 开始的路径
-     */
-    private fun drawStarSectionProgressBackground(canvas: Canvas) {
-        rect.top = starPath[0]
-        rect.left = starPath[1]
-        rect.bottom = starPath[2]
-        rect.right = starPath[3]
-        startDrawable.bounds = rect
-        if (stage > 1) {
-            startDrawable?.paint?.color = progressColor[0]
-        } else {
-            startDrawable?.paint?.color = progressBackground
-        }
-        startDrawable?.draw(canvas)
-    }
-
-    /**
-     * 第二个到第六区块区域的底部进度
-     */
-    private fun drawRectangleBackground(canvas: Canvas) {
-        for (i in 1..5) {
-            val left = starPath[1].plus(itemWidth.times(i)).plus(space.times(i))
-            rect.top = starPath[0]
-            rect.left = left
-            rect.bottom = starPath[2]
-            rect.right = left.plus(itemWidth)
-            val paint = towDrawable.paint
-            if (stage > i + 1) {
-                paint.color = progressColor[i]
-            } else {
-                paint.color = progressBackground
-            }
-            towDrawable.bounds = rect
-            towDrawable?.draw(canvas)
-        }
-
-    }
-
-    /**
-     * 绘制最后的模块的背景
-     */
-    private fun drawEndSectionProgressBackground(canvas: Canvas) {
-        val left = starPath[1].plus(itemWidth.times(6)).plus(space.times(6))
-        rect.top = starPath[0]
-        rect.left = left
-        rect.bottom = starPath[2]
-        rect.right = left.plus(itemWidth)
-        endDrawable.bounds = rect
-        val paint = endDrawable.paint
-        if (stage > 6) {
-            paint.color = progressColor[6]
-        } else {
-            paint.color = progressBackground
-        }
-        endDrawable.draw(canvas)
-    }
-
-    private fun drawProgressBackground(canvas: Canvas) {
-        drawStarSectionProgressBackground(canvas)
-        drawRectangleBackground(canvas)
-        drawEndSectionProgressBackground(canvas)
+    private fun getEndShape(): ShapeDrawable {
+        val endRoundRect = RoundRectShape(endInsideRound, null, endInsideRound)
+        return ShapeDrawable(endRoundRect)
     }
 
     /**
      * 设置统一的背景
      */
-    private fun onInitCommonPath() {
+    private fun onInitCommonPath(context: Context, attrs: AttributeSet?) {
+        obtainAttrs(context, attrs)
+        mPaint = Paint()
         mPaint.isAntiAlias = true
+        initProgressColor()
+        getInsideRound()
+        starProgressExternalRound = getStarExternalRound()
+        startDrawable = getStartShape()
+        endDrawable = getEndShape()
+        starStrokeDrawable = getStarStroke()
+        startRectProgress = starRectProgress()
+        localStrokeProgress = getLocalStroke()
         startDrawable?.paint?.apply {
             isAntiAlias = true
-            color = progressBackground
-        }
-        towDrawable?.paint?.apply {
-            isAntiAlias = true
-            color = progressBackground
+            color = stageProgressBackground
         }
         endDrawable?.paint?.apply {
             isAntiAlias = true
-            color = progressBackground
+            color = stageProgressBackground
         }
-        startDrawableProgress?.paint?.apply {
+        localStrokeProgress?.paint?.isAntiAlias = true
+        startRectProgress?.paint?.apply {
             isAntiAlias = true
-            color = progressColor[0]
+            color = progressColor.first()
         }
-        localDrawableProgress?.paint?.isAntiAlias = true
-        localSolidDrawableProgress?.paint?.isAntiAlias = true
-        startSolidDrawableProgress?.paint?.apply {
-            isAntiAlias = true
-            color = progressColor[0]
+    }
+
+    /**
+     * 需先设置值
+     */
+    var mCustomFtp: Int = 120
+
+    /**
+     * ftp 的百分比值
+     */
+    var ftpPercent: Int = 0
+
+    lateinit var mPaint: Paint
+
+    /**
+     * 设置输出功率值
+     * 需优先设置 mCustomFtp ftp值
+     */
+    fun setPowerOutPut(outPut: Int) {
+        this.outPut = outPut
+        drawOutPutProgress(outPut)
+        calculationFtpPercent(outPut)
+        postInvalidate()
+    }
+
+    var typeface: Typeface? = null
+
+    /**
+     * 设置文字字体
+     */
+    fun setTypeFace(typeface: Typeface) {
+        this.typeface = typeface
+    }
+
+    private fun getDisplayMetrics(): DisplayMetrics? {
+        return resources.displayMetrics
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        val defaultWidth =
+            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 348F, getDisplayMetrics())
+                .roundToInt()
+        val defaultHeight =
+            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 52f, getDisplayMetrics())
+                .roundToInt()
+        val width = measureHandler(widthMeasureSpec, defaultWidth)
+        val height = measureHandler(heightMeasureSpec, defaultHeight)
+        setMeasuredDimension(width, height)
+    }
+
+
+    /**
+     * 测量
+     * @param measureSpec
+     * @param defaultSize
+     * @return
+     */
+    private fun measureHandler(measureSpec: Int, defaultSize: Int): Int {
+        var result = defaultSize
+        val measureMode = MeasureSpec.getMode(measureSpec)
+        val measureSize = MeasureSpec.getSize(measureSpec)
+        if (measureMode == MeasureSpec.EXACTLY) {
+            result = measureSize
+        } else if (measureMode == MeasureSpec.AT_MOST) {
+            result = Math.min(defaultSize, measureSize)
         }
+        return result
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        drawLeftTitle(canvas)
+        drawProgressBackground(canvas) {
+            drawRange(canvas, it)
+        }
+        drawProgress(canvas)
+    }
+
+    /**
+     * 开始的路径
+     */
+    private fun drawProgressBackground(canvas: Canvas, init: (Float) -> Unit) {
+        val top = abs(((leftTitleHeight - stageItemHeight) / 2F))
+        val left = getFistStageLeft()
+        val bottom = (top + stageItemHeight)
+        val right = getFistStageRight()
+        rect.top = top.roundToInt()
+        rect.left = left
+        rect.bottom = bottom.roundToInt()
+        rect.right = right
+        startDrawable?.bounds = rect
+        if (stage > 1) {
+            startDrawable?.paint?.color = progressColor.first()
+        } else {
+            startDrawable?.paint?.color = stageProgressBackground
+        }
+        startDrawable?.draw(canvas)
+        drawRectangleBackground(canvas, top, bottom, left)
+        init(bottom)
+    }
+
+    var mFistStageLeft = 0
+
+    /**
+     * 第一个stage 的宽高
+     */
+    fun getFistStageLeft(): Int {
+        if (mFistStageLeft == 0) {
+            mFistStageLeft = leftTitleWidth + stageProgressMargin.roundToInt()
+        }
+        return mFistStageLeft
+    }
+
+    var mFistStageRight = 0
+
+    fun getFistStageRight(): Int {
+        if (mFistStageRight == 0) {
+            mFistStageRight = getFistStageLeft() + stageItemWidth.roundToInt()
+        }
+        return mFistStageRight
+    }
+
+    /**
+     * 第二个到第六区块区域的底部进度
+     */
+    private fun drawRectangleBackground(canvas: Canvas, top: Float, bottom: Float, left: Int) {
+        var endLeft = 0F
+        for (i in 1..5) {
+            val mLeft =
+                left.plus(stageItemWidth.times(i)).plus(stageProgressSpace.times(i))
+            val right = mLeft.plus(stageItemWidth)
+            if (stage > i + 1) {
+                mPaint.color = progressColor[i]
+            } else {
+                mPaint.color = stageProgressBackground
+            }
+            canvas.drawRect(mLeft, top, right, bottom, mPaint)
+            endLeft = right
+        }
+        drawEndSectionProgressBackground(canvas, top, bottom, endLeft)
+    }
+
+    /**
+     * 绘制最后的模块的背景
+     */
+    private fun drawEndSectionProgressBackground(
+        canvas: Canvas,
+        top: Float,
+        bottom: Float,
+        endLeft: Float
+    ) {
+        val left = endLeft.plus(stageProgressSpace)
+        val right = left.plus(stageItemWidth)
+        rect.top = top.roundToInt()
+        rect.left = left.roundToInt()
+        rect.bottom = bottom.roundToInt()
+        rect.right = right.roundToInt()
+        endDrawable?.bounds = rect
+        val paint = endDrawable?.paint
+        if (stage > 6) {
+            paint?.color = progressColor.last()
+        } else {
+            paint?.color = stageProgressBackground
+        }
+        endDrawable?.draw(canvas)
+        drawRightTitle(canvas, right)
+    }
+
+    /**
+     * 绘制右侧的标题
+     */
+    private fun drawRightTitle(canvas: Canvas, right: Float) {
+        val x = right.plus(stageProgressMargin)
+        mPaint.color = stageTitleTextColor
+        mPaint.textSize = stageTitleTextSize
+        mPaint.typeface = typeface
+        val rightTitle = "FTP"
+        val fontMetrics = mPaint.fontMetrics
+        val dy = (fontMetrics.top - fontMetrics.bottom) / 2 - fontMetrics.top
+        val texRect = getTexRect(rightTitle)
+        leftTitleWidth = texRect.width()
+        val height: Float = fontMetrics.descent - fontMetrics.ascent
+        leftTitleHeight = height.roundToInt()
+        val baseLine = (height / 2 + dy)
+        canvas.drawText(rightTitle, x, baseLine, mPaint)
+        val textRight = x + leftTitleWidth
+        drawRightValues("${ftpPercent}%", leftTitleHeight.toFloat(), textRight, canvas)
+    }
+
+    /**
+     * 绘制zone值与ftp值
+     */
+    private fun drawRightValues(text: String, top: Float, textRight: Float, canvas: Canvas) {
+        mPaint.color = stageTitleValueTextColor
+        mPaint.textSize = stageTitleValueTextSize
+        val fontMetrics = mPaint.fontMetrics
+        val dy = (fontMetrics.top - fontMetrics.bottom) / 2 - fontMetrics.top
+        val height: Float = fontMetrics.descent - fontMetrics.ascent
+        val baseLine = (height / 2 + dy)
+        val y = baseLine + top + stageValueMarginTop
+        val texRect = getTexRect(text)
+        val x = textRight.minus(texRect.width())
+        canvas.drawText(text, x, y, mPaint)
     }
 
     /**
      * 绘制进度
      */
     private fun drawProgress(canvas: Canvas) {
+        val top = abs(((leftTitleHeight - stageItemHeight) / 2F))
+        val bottom = (top + stageItemHeight)
         when (stage) {
             0 -> {
-                rect.top = starPath[0]
-                rect.left = starPath[1]
-                rect.bottom = starPath[2]
-                rect.right = starPath[3]
-                gradientDrawable.bounds = rect
-                gradientDrawable?.draw(canvas)
+                val left = getFistStageLeft()
+                val right = getFistStageRight()
+                rect.top = top.roundToInt()
+                rect.left = left
+                rect.bottom = bottom.roundToInt()
+                rect.right = right
+                starStrokeDrawable?.bounds = rect
+                starStrokeDrawable?.draw(canvas)
             }
             1 -> {
-                rect.top = starPath[0]
-                rect.left = starPath[1]
-                rect.bottom = starPath[2]
-                rect.right = starPath[3]
-                startDrawableProgress.bounds = rect
-                startDrawableProgress.draw(canvas)
-                rect.right = starPath[1].plus(stageProgress)
-                startSolidDrawableProgress.bounds = rect
-                startSolidDrawableProgress.draw(canvas)
+                val left = getFistStageLeft()
+                val right = getFistStageRight()
+                rect.top = top.roundToInt()
+                rect.left = left
+                rect.bottom = bottom.roundToInt()
+                rect.right = right
+                starStrokeDrawable?.bounds = rect
+                starStrokeDrawable?.draw(canvas)
+                rect.right = left.plus(stageProgress)
+                startRectProgress?.bounds = rect
+                startRectProgress?.draw(canvas)
             }
             2, 3, 4, 5, 6 -> {
                 val current = stage.minus(1)
-                val left = starPath[1].plus(itemWidth.times(current).plus(space.times(current)))
-                rect.top = starPath[0]
-                rect.left = left
-                rect.bottom = starPath[2]
-                rect.right = left.plus(itemWidth)
-                localDrawableProgress?.paint.color = progressColor[stage.minus(1)]
-                localDrawableProgress.bounds = rect
-                localDrawableProgress.draw(canvas)
-                localSolidDrawableProgress?.paint.color = progressColor[stage.minus(1)]
-                rect.right = left.plus(stageProgress)
-                localSolidDrawableProgress.bounds = rect
-                localSolidDrawableProgress.draw(canvas)
+                val startLeft = getFistStageLeft()
+                val left = startLeft.plus(
+                    stageItemWidth.times(current).plus(stageProgressSpace.times(current))
+                )
+                rect.top = top.roundToInt()
+                rect.left = left.roundToInt()
+                rect.bottom = bottom.roundToInt()
+                rect.right = left.plus(stageItemWidth).roundToInt()
+                localStrokeProgress?.paint?.color = progressColor[current]
+                localStrokeProgress?.bounds = rect
+                localStrokeProgress?.draw(canvas)
+                mPaint.color = progressColor[current]
+                val right = left.plus(stageProgress)
+                canvas.drawRect(left, top, right, bottom, mPaint)
             }
         }
     }
 
-    val ftpRect = Rect()
 
     /**
      * 绘制标题与ftp
      */
-    private fun drawTitle(canvas: Canvas) {
-        mPaint.color = color60
-        mPaint.textSize = 12F
+    private fun drawLeftTitle(canvas: Canvas) {
+        mPaint.color = stageTitleTextColor
+        mPaint.textSize = stageTitleTextSize
+        mPaint.typeface = typeface
         val leftTitle = "ZONE"
         val fontMetrics = mPaint.fontMetrics
-        val textHeight = fontMetrics.descent.minus(fontMetrics.ascent).minus(3)
-        canvas?.drawText(leftTitle, 0F, textHeight, mPaint)
-        val ftpTitle = "FTP"
-        mPaint.getTextBounds(ftpTitle, 0, ftpTitle.length, ftpRect)
-        val ftpWidth = ftpRect.width().toFloat()
-        canvas?.drawText(ftpTitle, width.minus(ftpWidth), textHeight, mPaint)
-        drawValues(textHeight.plus(30), canvas)
+        val dy = (fontMetrics.top - fontMetrics.bottom) / 2 - fontMetrics.top
+        val texRect = getTexRect(leftTitle)
+        leftTitleWidth = texRect.width()
+        val height: Float = fontMetrics.descent - fontMetrics.ascent
+        leftTitleHeight = height.roundToInt()
+        val baseLine = (height / 2 + dy)
+        canvas.drawText(leftTitle, 0F, baseLine, mPaint)
+        drawLeftValues("$stage", leftTitleHeight.toFloat(), canvas)
     }
+
+    private fun getTexRect(text: String): Rect {
+        mPaint.getTextBounds(text, 0, text.length, rect)
+        return rect
+    }
+
 
     /**
      * 绘制zone值与ftp值
      */
-    private fun drawValues(top: Float, canvas: Canvas) {
-        mPaint.color = Color.WHITE
-        mPaint.textSize = 20F
-        canvas?.drawText("$stage", 0F, top, mPaint)
-        val ftpText = "${ftpPercent}%"
-        mPaint.getTextBounds(ftpText, 0, ftpText.length, ftpRect)
-        val ftpWidth = ftpRect.width().toFloat()
-        canvas?.drawText(ftpText, width.minus(ftpWidth).minus(2), top, mPaint)
-        drawRange(canvas)
+    private fun drawLeftValues(text: String, top: Float, canvas: Canvas) {
+        mPaint.color = stageTitleValueTextColor
+        mPaint.textSize = stageTitleValueTextSize
+        val fontMetrics = mPaint.fontMetrics
+        val dy = (fontMetrics.top - fontMetrics.bottom) / 2 - fontMetrics.top
+        val height: Float = fontMetrics.descent - fontMetrics.ascent
+        val baseLine = (height / 2 + dy)
+        val y = baseLine + top + stageValueMarginTop
+        canvas.drawText(text, 0F, y, mPaint)
     }
 
     /**
      * 设置进度区与刻度
      */
-    private fun drawRange(canvas: Canvas) {
-        mPaint.textSize = 14F
-        for (i in 0..6) {
-            val left = starPath[1].plus(i.times(itemWidth)).plus(i.times(space)).toFloat()
-            val right = left.plus(1)
-            val top = 14F
-            val bottom = top.plus(4)
-            drawLines(left, top, right, bottom, canvas, i)
-            canvas.drawText("${itemSectionData[i]}", left, bottom.plus(20), mPaint)
+    private fun drawRange(canvas: Canvas, progressBottom: Float) {
+        val start = getFistStageLeft()
+        itemSectionData.forEachIndexed { index, i ->
+            val left = start.plus(stageItemWidth.roundToInt().times(index))
+                .plus(stageProgressSpace.roundToInt().times(index))
+            val right = left.plus(stageScaleWidth.roundToInt())
+            val top = progressBottom.plus(stageScaleMargeTop).roundToInt()
+            val bottom = top.plus(stageScaleHeight).roundToInt()
+            drawLines(left, top, right, bottom, canvas, index)
+            mPaint.color = stageItemTextColor
+            mPaint.textSize = stageItemTextSize
+            val fontMetrics = mPaint.fontMetrics
+            val dy = (fontMetrics.top - fontMetrics.bottom) / 2 - fontMetrics.top
+            val height: Float = fontMetrics.descent - fontMetrics.ascent
+            val baseLine = (height / 2 + dy)
+            canvas.drawText(
+                "${itemSectionData[index]}",
+                left.toFloat(),
+                bottom.plus(stageItemScaleValueMargeTop).plus(baseLine),
+                mPaint
+            )
         }
     }
 
-    val lineArray = arrayListOf<LinearGradient>()
+    val lineArray = arrayListOf<GradientDrawable>()
 
     /**
      * 绘制渐变颜色线条
      */
     private fun drawLines(
-        left: Float,
-        top: Float,
-        right: Float,
-        bottom: Float,
+        left: Int,
+        top: Int,
+        right: Int,
+        bottom: Int,
         canvas: Canvas,
         position: Int,
     ) {
@@ -316,145 +871,78 @@ class StageSectionView @JvmOverloads constructor(
             if (lineArray.size == 7) {
                 lineArray[position]
             } else {
-                val linearGradient = LinearGradient(
-                    left,
-                    top,
-                    right,
-                    bottom,
-                    intArrayOf(Color.WHITE, Color.parseColor("#00FFFFFF")),
-                    null,
-                    Shader.TileMode.MIRROR
+                val gradientDrawable = GradientDrawable(
+                    GradientDrawable.Orientation.TOP_BOTTOM,
+                    intArrayOf(Color.WHITE, Color.parseColor("#00FFFFFF"))
                 )
-                lineArray.add(linearGradient)
-                linearGradient
+                rect.left = left
+                rect.top = top
+                rect.right = right
+                rect.bottom = bottom
+                gradientDrawable.gradientType = GradientDrawable.LINEAR_GRADIENT
+                gradientDrawable.shape = GradientDrawable.RECTANGLE
+                gradientDrawable.bounds = rect
+                lineArray.add(gradientDrawable)
+                gradientDrawable
             }
-        mPaint.shader = line
-        canvas.drawRect(
-            left,
-            top,
-            right,
-            bottom,
-            mPaint
-        )
-        mPaint.shader = null
-    }
-
-
-    init {
-        setLayerType(LAYER_TYPE_SOFTWARE, null)
-        onInitCommonPath()
-    }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        val newWidth = progressLeft.times(2).plus(itemWidth.times(7)).plus(space.times(6))
-        val newHeight = 45
-        setMeasuredDimension(newWidth, newHeight)
-    }
-
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        drawProgressBackground(canvas)
-        drawProgress(canvas)
-        drawTitle(canvas)
-    }
-
-
-    /**
-     * 设置ftm的值
-     */
-    fun setCustomFtp(ftp: Int) {
-        mCustomFtp = ftp
-        itemSectionData.clear()
-        itemSectionData.add(0)
-        itemSectionData.add((ftp * 0.55).roundToInt())
-        itemSectionData.add((ftp * 0.75).roundToInt())
-        itemSectionData.add((ftp * 0.9).roundToInt())
-        itemSectionData.add((ftp * 1.05).roundToInt())
-        itemSectionData.add((ftp * 1.2).roundToInt())
-        itemSectionData.add((ftp * 1.5).roundToInt())
-        postInvalidate()
+        line.draw(canvas)
     }
 
     /**
-     * 设置输出功率值
+     * 计算ftp百分比
      */
-    fun setPowerOutPut(outPut: Int) {
-        this.outPut = outPut
-        setProgress(outPut)
-        setFtp(outPut)
-        postInvalidate()
-    }
-
-    /**
-     * 计算ftp值
-     */
-    private fun setFtp(outPut: Int) {
+    private fun calculationFtpPercent(outPut: Int) {
         ftpPercent = if (mCustomFtp == 0) {
             0
         } else {
-            div(outPut.toDouble() * 100, mCustomFtp.toDouble(), 0).toInt()
+            outPut.toDouble().times(100).div(mCustomFtp).roundToInt()
         }
     }
 
-    /**
-     * 提供（相对）精确的除法运算。当发生除不尽的情况时，由scale参数指
-     * 定精度，以后的数字四舍五入。
-     * @param v1 被除数
-     * @param v2 除数
-     * @param scale 表示表示需要精确到小数点以后几位。
-     * @return 两个参数的商
-     */
-    fun div(v1: Double, v2: Double, scale: Int): Double {
-        require(scale >= 0) { "The scale must be a positive integer or zero" }
-        val b1 = BigDecimal(v1.toString())
-        val b2 = BigDecimal(v2.toString())
-        return b1.divide(b2, scale, BigDecimal.ROUND_HALF_UP).toDouble()
-    }
 
-    private fun setProgress(outPut: Int) {
+    private fun drawOutPutProgress(outPut: Int) {
         stageProgress = when (outPut) {
-            in itemSectionData[0] until 1 -> {
+            in itemSectionData[0] until 5 -> {
                 stage = 0
                 0
             }
-            in itemSectionData[0] + 1 until itemSectionData[1] -> {  //0-80
+            in itemSectionData[0] + 5 until itemSectionData[1] -> {  //0-80
                 stage = 1
-                outPut.times(itemWidth).toFloat().div(itemSectionData[1]).toInt()
+                outPut.times(stageItemWidth).div(itemSectionData[1]).toInt()
             }
             in itemSectionData[1] until itemSectionData[2] -> { //80-110
                 stage = 2
                 val residue = outPut.minus(itemSectionData[1])
                 val sum = itemSectionData[2].minus(itemSectionData[1])
-                residue.times(itemWidth).toFloat().div(sum).toInt()
+                residue.times(stageItemWidth).div(sum).toInt()
             }
             in itemSectionData[2] until itemSectionData[3] -> {//110-130
                 stage = 3
                 val residue = outPut.minus(itemSectionData[2])
                 val sum = itemSectionData[3].minus(itemSectionData[2])
-                residue.times(itemWidth).toFloat().div(sum).toInt()
+                residue.times(stageItemWidth).div(sum).toInt()
             }
             in itemSectionData[3] until itemSectionData[4] -> {//130-150
                 stage = 4
                 val residue = outPut.minus(itemSectionData[3])
                 val sum = itemSectionData[4].minus(itemSectionData[3])
-                residue.times(itemWidth).toFloat().div(sum).toInt()
+                residue.times(stageItemWidth).div(sum).toInt()
             }
             in itemSectionData[4] until itemSectionData[5] -> {//150-180
                 stage = 5
                 val residue = outPut.minus(itemSectionData[4])
                 val sum = itemSectionData[5].minus(itemSectionData[4])
-                residue.times(itemWidth).toFloat().div(sum).toInt()
+                residue.times(stageItemWidth).div(sum).toInt()
             }
             in itemSectionData[5] until itemSectionData[6] -> {
                 stage = 6
                 val residue = outPut.minus(itemSectionData[5])
                 val sum = itemSectionData[6].minus(itemSectionData[5])
-                residue.times(itemWidth).toFloat().div(sum).toInt()
+                residue.times(stageItemWidth).div(sum).toInt()
             }
             else -> {
                 stage = 7
-                itemWidth
+                stageItemWidth.roundToInt()
             }
         }
     }

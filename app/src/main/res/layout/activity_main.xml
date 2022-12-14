@@ -4,11 +4,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
     android:background="@color/cardview_dark_background"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+
+    <com.android.yf.widget.StageSectionView
+        android:id="@+id/mStageSection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/black"
+        app:stageItemHeight="9.52dp"
+        app:stageItemScaleValueMargeTop="5.71dp"
+        app:stageItemTextColor="@color/white"
+        app:stageItemTextSize="13.33dp"
+        app:stageItemWidth="33.33dp"
+        app:stageProgressCorners="95.24dp"
+        app:stageProgressMargin="23.42dp"
+        app:stageProgressSpace="1.9dp"
+        app:stageProgressStrokeWidth="0.95dp"
+        app:stageScaleHeight="4.76dp"
+        app:stageScaleMargeTop="2.86dp"
+        app:stageScaleWidth="0.95dp"
+        app:stageTitleTextColor="#99FFFFFF"
+        app:stageTitleTextSize="13.33dp"
+        app:stageTitleValueTextColor="@color/white"
+        app:stageTitleValueTextSize="18.67dp"
+        app:stageValueMarginTop="8.97dp" />
 
     <TextView
         android:id="@+id/mTVTestAnimal"
@@ -20,21 +44,21 @@
         android:textColor="@color/black"
         android:textSize="40px" />
 
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/mTestAnimal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:lottie_autoPlay="false" />
+    <!--    <com.airbnb.lottie.LottieAnimationView-->
+    <!--        android:id="@+id/mTestAnimal"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        app:lottie_autoPlay="false" />-->
 
-    <Chronometer
-        android:id="@+id/mChorno"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <!--    <Chronometer-->
+    <!--        android:id="@+id/mChorno"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content" />-->
 
 
-    <com.android.yf.widget.CyclingScoreView
-        android:id="@+id/mScore"
-        android:layout_width="250dp"
-        android:layout_height="100dp"
-        android:scaleType="matrix" />
+    <!--    <com.android.yf.widget.CyclingScoreView-->
+    <!--        android:id="@+id/mScore"-->
+    <!--        android:layout_width="250dp"-->
+    <!--        android:layout_height="100dp"-->
+    <!--        android:scaleType="matrix" />-->
 </LinearLayout>

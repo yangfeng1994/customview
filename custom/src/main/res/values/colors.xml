@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="c_stage_section_1">#FF00FFFF</color>
+    <color name="c_stage_section_2">#00FF91</color>
+    <color name="c_stage_section_3">#FF9AC340</color>
+    <color name="c_stage_section_4">#FFE4E700</color>
+    <color name="c_stage_section_5">#FFE7BD00</color>
+    <color name="c_stage_section_6">#FFEB7100</color>
+    <color name="c_stage_section_7">#FFAC3004</color>
+    <color name="c_60_white">#99FFFFFF</color>
+    <color name="c_20_white">#33FFFFFF</color>
+</resources>
