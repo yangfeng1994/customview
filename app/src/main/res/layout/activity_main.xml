@@ -31,6 +31,8 @@
         app:stageTitleTextColor="#99FFFFFF"
         app:stageTitleTextSize="13.33dp"
         app:stageTitleValueTextColor="@color/white"
+        app:stageLeftTitle="ZONE"
+        app:stageRightTitle="FTP"
         app:stageTitleValueTextSize="18.67dp"
         app:stageValueMarginTop="8.97dp" />
 

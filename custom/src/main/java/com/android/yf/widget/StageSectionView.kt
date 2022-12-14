@@ -274,6 +274,24 @@ class StageSectionView @JvmOverloads constructor(
             postInvalidate()
         }
 
+    /**
+     * 左标题
+     */
+    var stageLeftTitle: String? = null
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+    /**
+     * 右标题
+     */
+    var stageRightTitle: String? = null
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
 
     /**
      * 构建属性
@@ -394,7 +412,8 @@ class StageSectionView @JvmOverloads constructor(
                 R.styleable.StageSectionView_stageItemTextColor,
                 Color.WHITE
             )
-
+        stageLeftTitle = type.getString(R.styleable.StageSectionView_stageLeftTitle)
+        stageRightTitle = type.getString(R.styleable.StageSectionView_stageRightTitle)
     }
 
     var starProgressExternalRound: FloatArray? = null
@@ -708,7 +727,7 @@ class StageSectionView @JvmOverloads constructor(
         mPaint.color = stageTitleTextColor
         mPaint.textSize = stageTitleTextSize
         mPaint.typeface = typeface
-        val rightTitle = "FTP"
+        val rightTitle = stageRightTitle ?: "FTP"
         val fontMetrics = mPaint.fontMetrics
         val dy = (fontMetrics.top - fontMetrics.bottom) / 2 - fontMetrics.top
         val texRect = getTexRect(rightTitle)
@@ -795,7 +814,7 @@ class StageSectionView @JvmOverloads constructor(
         mPaint.color = stageTitleTextColor
         mPaint.textSize = stageTitleTextSize
         mPaint.typeface = typeface
-        val leftTitle = "ZONE"
+        val leftTitle = stageLeftTitle ?: "ZONE"
         val fontMetrics = mPaint.fontMetrics
         val dy = (fontMetrics.top - fontMetrics.bottom) / 2 - fontMetrics.top
         val texRect = getTexRect(leftTitle)
