@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
             mStageSection.postInvalidate()
         }
         mStageSection.setTypeFace(mTypeface)
+        mStageSection.mCustomFtp = 120
         mStageSection.postInvalidate()
         thread()
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

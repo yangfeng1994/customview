@@ -536,7 +536,7 @@ class StageSectionView @JvmOverloads constructor(
     /**
      * 需先设置值
      */
-    var mCustomFtp: Int = 120
+    var mCustomFtp: Int = 0
 
     /**
      * ftp 的百分比值
@@ -895,7 +895,7 @@ class StageSectionView @JvmOverloads constructor(
         ftpPercent = if (mCustomFtp == 0) {
             0
         } else {
-            outPut.toDouble().times(100).div(mCustomFtp).roundToInt()
+            outPut.times(100F).div(mCustomFtp).roundToInt()
         }
     }
 
