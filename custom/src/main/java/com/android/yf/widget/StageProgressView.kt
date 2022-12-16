@@ -23,7 +23,7 @@ class StageProgressView @JvmOverloads constructor(
     /**
      * 进度条绘制间隔 7.5px
      */
-    private var interval = 7.5f
+    private var interval = 0F
 
     /**
      * 进行在第几个阶段

@@ -22,6 +22,8 @@
     <declare-styleable name="IntervalLineView">
         <attr name="inter_line_progress_color" format="color" />
         <attr name="inter_line_progress_background_color" format="color" />
+        <attr name="inter_line_progress_thumb_radius" format="dimension" />
+        <attr name="inter_line_progress_height" format="dimension" />
     </declare-styleable>
     <declare-styleable name="StageSectionView">
         <attr name="stageTitleTextSize" format="dimension" />
@@ -29,8 +31,8 @@
         <attr name="stageTitleValueTextSize" format="dimension" />
         <attr name="stageTitleValueTextColor" format="color" />
         <attr name="stageProgressMargin" format="dimension" />
-        <attr name="stageLeftTitle" format="string"/>
-        <attr name="stageRightTitle" format="string"/>
+        <attr name="stageLeftTitle" format="string" />
+        <attr name="stageRightTitle" format="string" />
         <attr name="stageProgressSpace" format="dimension" />
         <attr name="stageProgressItemTextSize" format="dimension" />
         <attr name="stageProgressItemTextColor" format="color" />

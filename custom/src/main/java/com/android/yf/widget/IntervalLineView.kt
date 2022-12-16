@@ -27,6 +27,13 @@ class IntervalLineView @JvmOverloads constructor(
         style = Paint.Style.FILL
     }
 
+    /**
+     *小圆点的半径
+     */
+    var thumbRadius: Float = 0F
+
+    var progressHeight = 0F
+
     init {
         obtain(context, attrs)
     }
@@ -41,10 +48,18 @@ class IntervalLineView @JvmOverloads constructor(
             R.styleable.IntervalLineView_inter_line_progress_background_color,
             Color.parseColor("#33FFFFFF")
         )
+        thumbRadius = type.getDimension(
+            R.styleable.IntervalLineView_inter_line_progress_thumb_radius,
+            resources.getDimension(R.dimen.d_1)
+        )
+        progressHeight = type.getDimension(
+            R.styleable.IntervalLineView_inter_line_progress_height,
+            resources.getDimension(R.dimen.d_1)
+        )
     }
 
     private var progress: Int = 0
-    var drawPoint = false
+    var drawPoint = true
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         drawProgress(canvas)
@@ -54,11 +69,22 @@ class IntervalLineView @JvmOverloads constructor(
      * 绘制进度
      */
     private fun drawProgress(canvas: Canvas?) {
-        canvas?.drawRoundRect(2F, 1F, 48F, 3F, 4F, 4F, mBackGroundPaint)
-        val progressWidth = progress.times(46F).div(100)
-        canvas?.drawRoundRect(2F, 1F, progressWidth.plus(2), 3F, 4F, 4F, mPaint)
+        val rx = progressHeight.div(2)
+        val left = thumbRadius.times(2)
+        val top = height.minus(progressHeight).div(2)
+        val right = width.minus(left.times(2))
+        val bottom = top.plus(progressHeight)
+        val width = right.minus(left)
+        canvas?.drawRoundRect(left, top, right, bottom, rx, rx, mBackGroundPaint)
+        val progressWidth = progress.times(width).div(100).plus(left)
+        canvas?.drawRoundRect(left, top, progressWidth, bottom, rx, rx, mPaint)
         if (drawPoint) {
-            canvas?.drawCircle(progressWidth.plus(2), 2F, 2F, mPaint)
+            canvas?.drawCircle(
+                progressWidth,
+                height.toFloat().div(2),
+                thumbRadius,
+                mPaint
+            )
         }
     }
 

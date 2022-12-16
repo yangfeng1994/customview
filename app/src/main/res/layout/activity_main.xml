@@ -21,18 +21,18 @@
         app:stageItemTextColor="@color/white"
         app:stageItemTextSize="13.33dp"
         app:stageItemWidth="33.33dp"
+        app:stageLeftTitle="ZONE"
         app:stageProgressCorners="95.24dp"
         app:stageProgressMargin="23.42dp"
         app:stageProgressSpace="1.9dp"
         app:stageProgressStrokeWidth="0.95dp"
+        app:stageRightTitle="FTP"
         app:stageScaleHeight="4.76dp"
         app:stageScaleMargeTop="2.86dp"
         app:stageScaleWidth="0.95dp"
         app:stageTitleTextColor="#99FFFFFF"
         app:stageTitleTextSize="13.33dp"
         app:stageTitleValueTextColor="@color/white"
-        app:stageLeftTitle="ZONE"
-        app:stageRightTitle="FTP"
         app:stageTitleValueTextSize="18.67dp"
         app:stageValueMarginTop="8.97dp" />
 
@@ -45,6 +45,15 @@
         android:text="测试动画"
         android:textColor="@color/black"
         android:textSize="40px" />
+
+    <com.android.yf.widget.IntervalLineView
+        android:id="@+id/mIntervalLineView"
+        android:layout_width="100dp"
+        android:layout_height="8dp"
+        app:inter_line_progress_thumb_radius="4dp"
+        app:inter_line_progress_height="2dp"
+        app:inter_line_progress_background_color="#33FFFFFF"
+        app:inter_line_progress_color="#64BC1C" />
 
     <!--    <com.airbnb.lottie.LottieAnimationView-->
     <!--        android:id="@+id/mTestAnimal"-->
