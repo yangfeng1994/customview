@@ -59,7 +59,7 @@ class IntervalLineView @JvmOverloads constructor(
     }
 
     private var progress: Int = 0
-    var drawPoint = true
+    var drawPoint = false
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         drawProgress(canvas)
