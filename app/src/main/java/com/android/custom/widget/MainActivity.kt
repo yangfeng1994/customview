@@ -53,6 +53,7 @@ class MainActivity : AppCompatActivity() {
                 val random = (0..300).random()
                 mStageSection.setPowerOutPut(random)
                 val progress = (0..100).random()
+                mIntervalLineView.drawPoint = true
                 mIntervalLineView.setProgress(progress)
             }
         }.start()

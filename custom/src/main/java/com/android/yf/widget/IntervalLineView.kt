@@ -70,9 +70,9 @@ class IntervalLineView @JvmOverloads constructor(
      */
     private fun drawProgress(canvas: Canvas?) {
         val rx = progressHeight.div(2)
-        val left = thumbRadius.times(2)
+        val left = thumbRadius
         val top = height.minus(progressHeight).div(2)
-        val right = width.minus(left.times(2))
+        val right = width.minus(left)
         val bottom = top.plus(progressHeight)
         val width = right.minus(left)
         canvas?.drawRoundRect(left, top, right, bottom, rx, rx, mBackGroundPaint)
