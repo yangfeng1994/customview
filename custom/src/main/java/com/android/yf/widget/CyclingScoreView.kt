@@ -46,7 +46,6 @@ class CyclingScoreView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        Log.e("yyyyyy","canvas  canvas")
         val bitmap = getBitmap(R.drawable.shape_cycling_score_view)
         canvas?.drawBitmap(bitmap, 0F, 0F, mPaint)
         bitmap.recycle()
