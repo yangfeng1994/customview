@@ -8,6 +8,6 @@
     <string name="stage_emotion_slow_text">情绪舒缓</string>
     <string name="stage_big_sprint_text">大冲刺</string>
     <string name="stage_get_off_text">下车</string>
-    <string name="stage_stretch_text">Cool Down拉伸</string>
+    <string name="stage_stretch_text">拉伸</string>
     <string name="stage_over_text">结束</string>
 </resources>
