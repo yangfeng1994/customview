@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="stage_start_text">Warm up</string>
-    <string name="stage_warn_up_text">Warm up</string>
+    <string name="stage_start_text">Warm Up</string>
+    <string name="stage_warn_up_text">Warm Up</string>
     <string name="stage_cycling_text">Cycling</string>
     <string name="stage_rest_text">Rest Interval</string>
     <string name="stage_upper_body_text">Upper Body Training</string>
     <string name="stage_emotion_slow_text">Mood Relaxation</string>
     <string name="stage_big_sprint_text">Sprint</string>
-    <string name="stage_get_off_text">Cool down</string>
-    <string name="stage_stretch_text">Cool down</string>
+    <string name="stage_get_off_text">Cool Down</string>
+    <string name="stage_stretch_text">Cool Down</string>
     <string name="stage_over_text">End</string>
 </resources>
