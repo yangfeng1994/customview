@@ -773,6 +773,7 @@ class StageSectionView @JvmOverloads constructor(
                 starStrokeDrawable?.bounds = rect
                 starStrokeDrawable?.draw(canvas)
             }
+
             1 -> {
                 val left = getFistStageLeft()
                 val right = getFistStageRight()
@@ -786,6 +787,7 @@ class StageSectionView @JvmOverloads constructor(
                 startRectProgress?.bounds = rect
                 startRectProgress?.draw(canvas)
             }
+
             2, 3, 4, 5, 6 -> {
                 val current = stage.minus(1)
                 val startLeft = getFistStageLeft()
@@ -864,8 +866,13 @@ class StageSectionView @JvmOverloads constructor(
             val dy = (fontMetrics.top - fontMetrics.bottom) / 2 - fontMetrics.top
             val height: Float = fontMetrics.descent - fontMetrics.ascent
             val baseLine = (height / 2 + dy)
+            val text = if (index == 0) {
+                0
+            } else {
+                itemSectionData[index] + 1
+            }
             canvas.drawText(
-                "${itemSectionData[index]}",
+                "$text",
                 left.toFloat(),
                 bottom.plus(stageItemScaleValueMargeTop).plus(baseLine),
                 mPaint
@@ -925,40 +932,47 @@ class StageSectionView @JvmOverloads constructor(
                 stage = 0
                 0
             }
-            in itemSectionData[0] + 5 until itemSectionData[1] -> {  //0-80
+
+            in itemSectionData[0] + 5..itemSectionData[1] -> {  //0-80
                 stage = 1
                 outPut.times(stageItemWidth).div(itemSectionData[1]).toInt()
             }
-            in itemSectionData[1] until itemSectionData[2] -> { //80-110
+
+            in itemSectionData[1] + 1..itemSectionData[2] -> { //80-110
                 stage = 2
                 val residue = outPut.minus(itemSectionData[1])
                 val sum = itemSectionData[2].minus(itemSectionData[1])
                 residue.times(stageItemWidth).div(sum).toInt()
             }
-            in itemSectionData[2] until itemSectionData[3] -> {//110-130
+
+            in itemSectionData[2] + 1..itemSectionData[3] -> {//110-130
                 stage = 3
                 val residue = outPut.minus(itemSectionData[2])
                 val sum = itemSectionData[3].minus(itemSectionData[2])
                 residue.times(stageItemWidth).div(sum).toInt()
             }
-            in itemSectionData[3] until itemSectionData[4] -> {//130-150
+
+            in itemSectionData[3] + 1..itemSectionData[4] -> {//130-150
                 stage = 4
                 val residue = outPut.minus(itemSectionData[3])
                 val sum = itemSectionData[4].minus(itemSectionData[3])
                 residue.times(stageItemWidth).div(sum).toInt()
             }
-            in itemSectionData[4] until itemSectionData[5] -> {//150-180
+
+            in itemSectionData[4] + 1..itemSectionData[5] -> {//150-180
                 stage = 5
                 val residue = outPut.minus(itemSectionData[4])
                 val sum = itemSectionData[5].minus(itemSectionData[4])
                 residue.times(stageItemWidth).div(sum).toInt()
             }
-            in itemSectionData[5] until itemSectionData[6] -> {
+
+            in itemSectionData[5] + 1..itemSectionData[6] -> {
                 stage = 6
                 val residue = outPut.minus(itemSectionData[5])
                 val sum = itemSectionData[6].minus(itemSectionData[5])
                 residue.times(stageItemWidth).div(sum).toInt()
             }
+
             else -> {
                 stage = 7
                 stageItemWidth.roundToInt()
