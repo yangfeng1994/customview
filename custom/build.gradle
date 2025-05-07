@@ -60,13 +60,13 @@ afterEvaluate {
                 version = version
             }
             //发布debug版本
-            debug(MavenPublication) {
-                // Applies the component for the release build variant.
-                from components.debug
-                groupId = group
-                artifactId = 'customview-debug'
-                version = version
-            }
+//            debug(MavenPublication) {
+//                // Applies the component for the release build variant.
+//                from components.debug
+//                groupId = group
+//                artifactId = 'customview-debug'
+//                version = version
+//            }
         }
     }
 }
