@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stage_start_text">Kezdet</string>  <!-- 开场（"开始"更准确） -->
+    <string name="stage_warn_up_text">Bemelegítés</string>  <!-- 热身（标准运动术语） -->
+    <string name="stage_cycling_text">Kerékpározás</string>  <!-- 骑行 -->
+    <string name="stage_rest_text">Szünet</string>  <!-- 间歇休息（简化为"休息"） -->
+    <string name="stage_upper_body_text">Felsőtest</string>  <!-- 上肢训练（字面"上半身"） -->
+    <string name="stage_emotion_slow_text">Kikapcsolódás</string>  <!-- 情绪舒缓（"放松"） -->
+    <string name="stage_big_sprint_text">Sprint</string>  <!-- 大冲刺（保留国际术语） -->
+    <string name="stage_get_off_text">Leszállás</string>  <!-- 下车（运动场景专用词） -->
+    <string name="stage_stretch_text">Nyújtás</string>  <!-- 拉伸 -->
+    <string name="stage_over_text">Vége</string>  <!-- 结束（极简表达） -->
+</resources>
